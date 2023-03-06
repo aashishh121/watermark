@@ -1,3 +1,29 @@
+const ffmpeg = require('fluent-ffmpeg');
+const videoFile = 'video.mp4';
+const imageFile = 'watermark.jpg';
+const outputVideo = 'output.mp4';
+
+ffmpeg()
+  .input(imageFile)
+  .inputOptions('-loop 1')
+  .inputOptions('-t 1')
+  .input(videoFile)
+  .complexFilter([
+    '[0:v]scale=-1:480,fade=t=out:st=0:d=1:alpha=1[delayed]',
+    '[1:v][delayed]overlay=0:0'
+  ])
+  .outputOptions('-c:a copy')
+  .outputOptions('-shortest')
+  .output(outputVideo)
+  .on('end', () => {
+    console.log('Finished processing');
+  })
+  .on('error', (err) => {
+    console.error(`Error: ${err}`);
+  })
+  .run();
+
+
 const express = require('express');
 var fs = require('fs');
 
